@@ -37,9 +37,7 @@ server {
 }
 ```
 
-This will define example.com with the medium ssl security values from ssl-config and the http to https redirect
-
-https://ssl-config.mozilla.org/#server=nginx&version=1.17.7&config=intermediate&openssl=1.1.1d&guideline=5.4
+This will define example.com with authentication to the defined azure application specifically within the tenant.
 
 # Advanced
 
