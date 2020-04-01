@@ -1,0 +1,17 @@
+---
+# Azure tenant
+azure_tenantid: "common"
+
+# URL and version to pull Oauth from 
+oauth_url: https://github.com/oauth2-proxy/oauth2-proxy/releases/download/{{ oauth_version }}/{{ oauth_tar }}.tar.gz
+oauth_version: 'v5.1.0'
+oauth_tar: "oauth2_proxy-{{ oauth_version }}.linux-amd64.go1.14"
+oauth_checksum: "sha256:0362b9a951200084e68d75c9937e774ccf7412ea1ef59d96b214686a55a489f4"
+
+# User and group to run the proxy as 
+oauth_user: "oauth"
+oauth_group: "oauth"
+
+# Path to install the application and its configuration file
+oauth_installdir: /opt/oauth
+oauth_config_path: "{{ oauth_installdir }}/oauth.cfg"

@@ -1,0 +1,28 @@
+
+# https://github.com/oauth2-proxy/oauth2-proxy
+# Network settings
+http_address = "127.0.0.1:9090"
+reverse_proxy = true
+
+# Common settings
+logging_filename  = "oath_log"
+logging_max_age   = 7
+standard_logging  = true
+proxy_prefix      = "/auth"
+
+# Azure Authentication
+provider        = "azure"
+azure_tenant  = "{{ azure_tenantid }}"
+client_id       = "{{ webauth_client_id }}"
+client_secret   = "{{ webauth_client_secret }}"
+email_domains   = "*"
+
+# Client Settings
+cookie_name = "_x_auth_cookie"
+cookie_secret = "{{ cookie_secret }}"
+cookie_expire = "24h"
+cookie_secure = true
+cookie_httponly = true
+skip_provider_button = true 
+set_authorization_header = true
+set_xauthrequest = true

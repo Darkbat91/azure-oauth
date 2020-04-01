@@ -1,0 +1,16 @@
+- name: Oauth | Handlers | Reload systemd
+  command: systemctl daemon-reload
+  listen: systemd_reload
+
+- name: Oauth | Handlers | Restart Oauth
+  service:
+    name: oauth
+    state: restarted
+  listen: restart_oauth
+
+- name: Oauth | Handlers | Restart Nginx
+  service:
+    name: nginx
+    state: restarted
+  listen: restart_nginx
+  

@@ -1,0 +1,127 @@
+- name: Oauth | Validate | App Client ID
+  debug: 
+    msg: "webauth_client_id is required"
+  failed_when: webauth_client_id is not defined
+
+- name: Oauth | Validate | App Client Secret
+  debug: 
+    msg: "webauth_client_secret is required"
+  failed_when: webauth_client_secret is not defined
+
+- name: Oauth | Users | Create service group
+  group: 
+    name: "{{ oauth_group }}"
+  become: true
+
+- name: Oauth | Users | Create service user
+  user:
+    name: "{{ oauth_user }}"
+    group: "{{ oauth_group }}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "oauth nologin User"
+    createhome: "no"
+    state: present
+
+- name: Oauth | Directories | Create Install dir
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: "{{ oauth_user }}"
+    group: "{{ oauth_group }}"
+    mode: 0750
+  with_items:
+    - '{{ oauth_installdir }}'
+
+- name: Oauth | Version | Check Current version
+  shell: "{{ oauth_installdir }}/oauth2_proxy -version"
+  ignore_errors: yes
+  register: current_oauth
+  changed_when: false
+
+- name: Oauth | debug | version
+  debug:
+    var: current_oauth.stdout   
+
+- name: Oauth | Install | Download oauth archive 
+  get_url:
+    url: "{{ oauth_url }}"
+    dest: /tmp/oauth.tar.gz
+    owner: "{{ oauth_user }}"
+    group: "{{ oauth_user }}"
+    mode: 0755
+    checksum: "{{oauth_checksum}}"
+  register: oauth_download
+  when: current_oauth is failed or oauth_version not in current_oauth.stdout
+
+- name: Oauth | Install | unzip archive
+  unarchive:
+    src: "{{ oauth_download.dest }}"
+    dest: "/tmp"
+    copy: no
+    owner: "{{ oauth_user }}"
+    group: "{{ oauth_user }}"
+    mode: 0755
+  when: current_oauth is failed or oauth_version not in current_oauth.stdout
+
+- name: Oauth | Install | copy to working DIR
+  copy:
+    src: /tmp/{{ oauth_tar }}/oauth2_proxy
+    dest: '{{ oauth_installdir }}'
+    owner: "{{ oauth_user }}"
+    group: "{{ oauth_user }}"
+    mode: '0755'
+    remote_src: yes
+  when: current_oauth is failed or oauth_version not in current_oauth.stdout
+  
+- name: Oauth | Service | Copy Service 
+  template:
+    src: etc_systemd_system_oauth.service.j2
+    dest: /etc/systemd/system/oauth.service
+    owner: root
+    group: root
+  notify: systemd_reload
+
+- name: Oauth | Secrets | Cookie generate
+  # TODO: Figure out why base64 24 bytes gets decoded at 32 bytes in Oauth
+  shell: openssl rand -base64 24
+  register: cookie_raw
+  when: cookie_secret is not defined
+
+- name: Oauth | Secrets | Cookie Save
+  set_fact:
+    cookie_secret: '{{ cookie_raw.stdout }}'
+    cacheable: True
+  when: cookie_secret is not defined
+
+- name: Oauth | Install | copy proxy definition
+  copy:
+    src: etc_nginx_confd_proxyauth.conf
+    dest: /etc/nginx/conf.d/proxyauth.conf
+    owner: nginx
+    group: nginx
+    mode: '0640'
+  notify: restart_nginx
+
+- name: Oauth | Install | copy nginx Snipit
+  copy:
+    src: etc_nginx_oauth.conf
+    dest: /etc/nginx/oauth.conf
+    owner: nginx
+    group: nginx
+    mode: '0640'
+  notify: restart_nginx
+
+- name: Oauth | Config | Copy Config
+  template:
+    src: opt_oauth_config.cfg.j2
+    dest: "{{ oauth_config_path }}"
+    owner: "{{ oauth_user }}"
+    group: "{{ oauth_group }}"
+  notify: restart_oauth
+
+- name: Oauth | Service | Start
+  service:
+    name: oauth
+    state: started
+    enabled: yes

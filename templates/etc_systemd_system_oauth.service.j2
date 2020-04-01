@@ -1,0 +1,22 @@
+[Unit]
+Description=oauth Reverse proxy
+After=network.target
+Documentation=https://github.com/oauth2-proxy/oauth2-proxy
+ConditionFileNotEmpty=/etc/vault.hcl
+
+[Service]
+Type=simple
+User=oauth
+Group=oauth
+Restart=on-failure
+RestartSec=5
+WorkingDirectory={{ oauth_installdir }}
+ExecStart={{ oauth_installdir }}/oauth2_proxy --config=oauth.cfg
+StartLimitInterval=60s
+StartLimitBurst=3
+ExecReload=/usr/local/bin/kill --signal HUP $MAINPID
+ExecStop=/usr/bin/pkill $MAINPID
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
