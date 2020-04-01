@@ -12,7 +12,7 @@ webauth_client_id: xxxx-xxxx-xxxx # Found from the creation of the application
 webauth_client_secret: xxxxxxxxxx # Generated inside of the application
 ```
 
-This starts and enables the service. In order to consume it you will need to include the oauth.conf nginx snippit in your desired website as below this role is dependant on [mod-nginx]() 
+This starts and enables the service. In order to consume it you will need to include the oauth.conf nginx snippit in your desired website as below this role is dependant on [mod-nginx](https://github.com/Darkbat91/mod-nginx) 
 
 
 /etc/nginx/conf.d/myhost.conf
