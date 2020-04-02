@@ -41,4 +41,4 @@ This will define example.com with authentication to the defined azure applicatio
 
 # Advanced
 
-There are numerous other options within the defaults/main.yml that can change other parts of the behavior of the system
+There are numerous other options within the [defaults/main.yml](./defaults/main.yml) that can change other parts of the behavior of the system
