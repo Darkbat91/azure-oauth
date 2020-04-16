@@ -1,0 +1,11 @@
+- name: OAuth | fluentd | Add fluentd user to {{ oauth_group }}
+  user: 
+    name: "{{ fluentd_user }}"
+    append: yes
+    groups: ["{{ oauth_group }}"]
+
+- name: OAuth | fluentd | Copy oauth.conf
+  template:
+    src: etc_tdagent_confd_oauth.conf.j2
+    dest: /etc/td-agent/conf.d/oauth.conf
+  notify: restart_fluentd

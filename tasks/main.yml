@@ -120,6 +120,9 @@
     group: "{{ oauth_group }}"
   notify: restart_oauth
 
+- include: fluentd.yml
+  when: fluentdreport
+
 - name: Oauth | Service | Start
   service:
     name: oauth

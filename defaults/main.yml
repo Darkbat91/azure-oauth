@@ -15,3 +15,7 @@ oauth_group: "oauth"
 # Path to install the application and its configuration file
 oauth_installdir: /opt/oauth
 oauth_config_path: "{{ oauth_installdir }}/oauth.cfg"
+
+# Enables the tailing of the log file to fluentd
+fluentdreport: false
+fluentd_user: 'td-agent'

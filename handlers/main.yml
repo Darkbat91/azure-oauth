@@ -14,3 +14,8 @@
     state: restarted
   listen: restart_nginx
   
+- name: Oauth | Handler | restart tdagent
+  service:
+    name: td-agent
+    state: restarted
+  listen: restart_fluentd
