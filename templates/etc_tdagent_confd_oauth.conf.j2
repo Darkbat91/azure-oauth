@@ -1,7 +1,13 @@
 <source>
     @type tail
-    format none
     tag source.oauth
     path {{ oauth_installdir }}/oauth.log
     pos_file /var/log/td-agent/oauth.log.pos
+
+    <parse>
+    @type regexp
+    expression /(?<src_ip>\d+\.\d+\.\d+\.\d+)\s\-\s(?<username>.*)\[(?<logtime>\d+\/\d+\/\d+\s\d+\:\d+\:\d+)\]\s(?<server_name>[\w\d\.]*)\s(?<method>\w+)\s\-\s\"(?<url_path>[\w\d\/]+)\"\s(?<http_header>\w+\/\d+\.\d+)\s\"(?<useragent>.*)\"\s(?<http_status>\d+)\s(?<code>\d+)\s(?<returntime>\d+\.\d+)/
+    time_key logtime
+    time_format %Y/%m/%d %H:%M:%S
+    </parse>
 </source>
