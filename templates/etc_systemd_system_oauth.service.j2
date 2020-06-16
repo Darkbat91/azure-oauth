@@ -2,7 +2,7 @@
 Description=oauth Reverse proxy
 After=network.target
 Documentation=https://github.com/oauth2-proxy/oauth2-proxy
-ConditionFileNotEmpty=/etc/vault.hcl
+ConditionFileNotEmpty={{ oauth_installdir }}/oauth.cfg
 
 [Service]
 Type=simple
